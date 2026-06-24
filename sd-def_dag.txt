@@ -1,0 +1,271 @@
+SD‑DEF: Full Directed Acyclic Graph (DAG)
+
+Below is the SD‑DEF engine as a DAG of nodes (modules) and edges (data/control dependencies), organized from inputs → signals → events → scores → analysis → projections → remediation.
+
+---
+
+1. Top‑level DAG overview
+
+`text
+[Asset & Context Inputs]
+        ↓
+[Signal Collectors]
+        ↓
+[Signal Normalization]
+        ↓
+[Degradation Event Construction]
+        ↓
+[Control & Framework Mapping]
+        ↓
+[Scoring Engines]
+        ↓
+[Causal & Systemic Analysis]
+        ↓
+[Risk Projection & Scenario Modeling]
+        ↓
+[Response & Remediation Planning]
+        ↓
+[Outputs & Reporting]
+`
+
+---
+
+2. Node set (modules) with dependencies
+
+2.1 Input & context layer
+
+1. AssetInventoryLoader
+   - Inputs: CMDB, cloud inventory, endpoint lists, app registry  
+   - Outputs: AssetSet
+
+2. ControlCatalogLoader
+   - Inputs: NIST CSF, internal control library, tool catalog  
+   - Outputs: ControlSet
+
+3. PolicyBaselineLoader
+   - Inputs: security policies, configuration baselines, SOPs  
+   - Outputs: PolicyBaselineSet
+
+4. ThreatModelLoader
+   - Inputs: threat intel, attack patterns, risk register  
+   - Outputs: ThreatModel
+
+Edges:
+
+- AssetInventoryLoader → AssetSet
+- ControlCatalogLoader → ControlSet
+- PolicyBaselineLoader → PolicyBaselineSet
+- ThreatModelLoader → ThreatModel
+
+These four feed almost everything downstream.
+
+---
+
+2.2 Signal intake layer
+
+5. ConfigSignalCollector
+   - Inputs: live configs, IaC, baseline diffs, PolicyBaselineSet
+   - Outputs: ConfigSignalStream
+
+6. OperationalSignalCollector
+   - Inputs: patch status, backup logs, cert status, AssetSet
+   - Outputs: OperationalSignalStream
+
+7. TelemetrySignalCollector
+   - Inputs: SIEM logs, EDR coverage, sensor maps, AssetSet
+   - Outputs: TelemetrySignalStream
+
+8. AttackSurfaceSignalCollector
+   - Inputs: discovery scans, cloud APIs, AssetSet, ThreatModel
+   - Outputs: AttackSurfaceSignalStream
+
+Edges:
+
+- PolicyBaselineSet → ConfigSignalCollector
+- AssetSet → OperationalSignalCollector
+- AssetSet → TelemetrySignalCollector
+- AssetSet, ThreatModel → AttackSurfaceSignalCollector
+
+---
+
+2.3 Normalization & classification layer
+
+9. SignalNormalizer
+   - Inputs: ConfigSignalStream, OperationalSignalStream, TelemetrySignalStream, AttackSurfaceSignalStream
+   - Outputs: NormalizedSignalStream
+
+10. SignalClassifier
+    - Inputs: NormalizedSignalStream
+    - Outputs: typed signals:
+      - MisconfigSignal
+      - DriftSignal
+      - VisibilityLossSignal
+      - ControlFailureSignal
+      - SurfaceExpansionSignal
+
+Edges:
+
+- ConfigSignalStream, OperationalSignalStream, TelemetrySignalStream, AttackSurfaceSignalStream → SignalNormalizer
+- SignalNormalizer → SignalClassifier
+
+---
+
+2.4 Degradation event construction
+
+11. DegradationEventBuilder
+    - Inputs: classified signals, AssetSet, ControlSet
+    - Outputs: DegradationEventStream  
+      Each DegradationEvent has:
+      - event_id
+      - type (misconfig, drift, visibility_loss, etc.)
+      - asset_id
+      - control_id
+      - timestamp
+      - rawsignalrefs
+
+12. ImpactSurfaceMapper
+    - Inputs: DegradationEventStream, AssetSet, ThreatModel
+    - Outputs: ImpactSurfaceSet (per event: affected systems, users, data classes)
+
+Edges:
+
+- SignalClassifier, AssetSet, ControlSet → DegradationEventBuilder
+- DegradationEventBuilder, AssetSet, ThreatModel → ImpactSurfaceMapper
+
+---
+
+2.5 Control & framework mapping
+
+13. ControlFrameworkMapper
+    - Inputs: DegradationEventStream, ControlSet
+    - Outputs: EventControlMapping  
+      (NIST CSF function/category/subcategory, internal control IDs)
+
+14. ComplianceImpactMapper
+    - Inputs: EventControlMapping, PolicyBaselineSet
+    - Outputs: ComplianceImpactSet (which policies/SOPs are violated or degraded)
+
+Edges:
+
+- DegradationEventStream, ControlSet → ControlFrameworkMapper
+- ControlFrameworkMapper, PolicyBaselineSet → ComplianceImpactMapper
+
+---
+
+2.6 Scoring engines
+
+15. ControlWeakeningScorer
+    - Inputs: DegradationEventStream, EventControlMapping, ImpactSurfaceSet
+    - Outputs: ControlWeakeningScoreSet
+
+16. ExposureAmplificationScorer
+    - Inputs: SurfaceExpansionSignal, ImpactSurfaceSet, ThreatModel
+    - Outputs: ExposureAmplificationScoreSet
+
+17. DetectionBlindnessScorer
+    - Inputs: VisibilityLossSignal, TelemetrySignalStream, ImpactSurfaceSet
+    - Outputs: DetectionBlindnessScoreSet
+
+18. ProcessErosionScorer
+    - Inputs: DriftSignal, PolicyBaselineSet, ComplianceImpactSet
+    - Outputs: ProcessErosionScoreSet
+
+19. SecurityDegradationIndexAggregator
+    - Inputs: all score sets (15–18)
+    - Outputs: SecurityDegradationIndex (SDI) per asset, per control, global
+
+Edges:
+
+- DegradationEventStream, EventControlMapping, ImpactSurfaceSet → ControlWeakeningScorer
+- SurfaceExpansionSignal, ImpactSurfaceSet, ThreatModel → ExposureAmplificationScorer
+- VisibilityLossSignal, TelemetrySignalStream, ImpactSurfaceSet → DetectionBlindnessScorer
+- DriftSignal, PolicyBaselineSet, ComplianceImpactSet → ProcessErosionScorer
+- ControlWeakeningScoreSet, ExposureAmplificationScoreSet, DetectionBlindnessScoreSet, ProcessErosionScoreSet → SecurityDegradationIndexAggregator
+
+---
+
+2.7 Causal & systemic analysis
+
+20. RootCauseClassifier
+    - Inputs: DegradationEventStream, score sets, OperationalSignalStream
+    - Outputs: RootCauseSet (human error, misconfig, tool failure, process drift, design flaw)
+
+21. SystemicWeaknessDetector
+    - Inputs: RootCauseSet, EventControlMapping, ControlSet
+    - Outputs: SystemicWeaknessSet (patterns across controls, teams, architectures)
+
+22. TemporalDriftAnalyzer
+    - Inputs: historical DegradationEventStream, historical score sets
+    - Outputs: DriftTrajectorySet (time‑series of degradation)
+
+Edges:
+
+- DegradationEventStream, score sets, OperationalSignalStream → RootCauseClassifier
+- RootCauseSet, EventControlMapping, ControlSet → SystemicWeaknessDetector
+- Historical DegradationEventStream, Historical score sets → TemporalDriftAnalyzer
+
+---
+
+2.8 Risk projection & scenario modeling
+
+23. DegradationTrajectoryModeler
+    - Inputs: DriftTrajectorySet, SecurityDegradationIndex, SystemicWeaknessSet
+    - Outputs: DegradationTrajectoryForecast
+
+24. FailureCascadeModeler
+    - Inputs: SystemicWeaknessSet, EventControlMapping, ThreatModel
+    - Outputs: FailureCascadeGraph (how weakened controls can chain)
+
+25. ExploitabilityForecaster
+    - Inputs: DegradationTrajectoryForecast, FailureCascadeGraph, ThreatModel
+    - Outputs: ExploitabilityForecastSet (likelihood & impact of exploitation)
+
+Edges:
+
+- DriftTrajectorySet, SecurityDegradationIndex, SystemicWeaknessSet → DegradationTrajectoryModeler
+- SystemicWeaknessSet, EventControlMapping, ThreatModel → FailureCascadeModeler
+- DegradationTrajectoryForecast, FailureCascadeGraph, ThreatModel → ExploitabilityForecaster
+
+---
+
+2.9 Response & remediation layer
+
+26. ImmediateFixGenerator
+    - Inputs: high‑severity events, score sets, ExploitabilityForecastSet
+    - Outputs: ImmediateFixList (ranked, actionable items)
+
+27. StructuralRemediationPlanner
+    - Inputs: SystemicWeaknessSet, FailureCascadeGraph, PolicyBaselineSet
+    - Outputs: StructuralRemediationPlan
+
+28. ControlHardeningPlanner
+    - Inputs: ControlWeakeningScoreSet, ThreatModel, ControlSet
+    - Outputs: ControlHardeningPlan
+
+29. VisibilityRestorationPlanner
+    - Inputs: DetectionBlindnessScoreSet, TelemetrySignalStream, ImpactSurfaceSet
+    - Outputs: VisibilityRestorationPlan
+
+Edges:
+
+- High‑severity score sets, ExploitabilityForecastSet → ImmediateFixGenerator
+- SystemicWeaknessSet, FailureCascadeGraph, PolicyBaselineSet → StructuralRemediationPlanner
+- ControlWeakeningScoreSet, ThreatModel, ControlSet → ControlHardeningPlanner
+- DetectionBlindnessScoreSet, TelemetrySignalStream, ImpactSurfaceSet → VisibilityRestorationPlanner
+
+---
+
+2.10 Outputs & reporting
+
+30. RiskDashboardAssembler
+    - Inputs: SDI, forecasts, plans, ImpactSurfaceSet
+    - Outputs: dashboards, APIs
+
+31. ReportGenerator
+    - Inputs: all major artifacts (events, scores, causes, plans)
+    - Outputs: human‑readable reports (exec, ops, audit)
+
+Edges:
+
+- SecurityDegradationIndex, ExploitabilityForecastSet, ImpactSurfaceSet, remediation plans → RiskDashboardAssembler
+- All upstream artifacts → ReportGenerator
