@@ -1,0 +1,223 @@
+{
+  "$id": "https://example.com/sd-def.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SD-DEF Schema",
+  "type": "object",
+  "definitions": {
+    "Asset": {
+      "type": "object",
+      "required": ["id", "name", "type"],
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "type": { "type": "string", "enum": ["host", "service", "application", "user", "network"] },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "criticality": { "type": "string", "enum": ["low", "medium", "high", "critical"] }
+      },
+      "additionalProperties": false
+    },
+
+    "Control": {
+      "type": "object",
+      "required": ["id", "name", "frameworkRef"],
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "frameworkRef": {
+          "type": "object",
+          "required": ["framework", "function", "category", "subcategory"],
+          "properties": {
+            "framework": { "type": "string", "enum": ["NIST-CSF"] },
+            "function": { "type": "string", "enum": ["Identify", "Protect", "Detect", "Respond", "Recover"] },
+            "category": { "type": "string" },
+            "subcategory": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        "owner": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+
+    "SignalBase": {
+      "type": "object",
+      "required": ["id", "source", "timestamp"],
+      "properties": {
+        "id": { "type": "string" },
+        "source": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "assetId": { "type": "string" },
+        "controlId": { "type": "string" },
+        "severity": { "type": "string", "enum": ["info", "low", "medium", "high", "critical"] },
+        "details": { "type": "object", "additionalProperties": true }
+      },
+      "additionalProperties": false
+    },
+
+    "DegradationEvent": {
+      "type": "object",
+      "required": ["id", "type", "assetId", "timestamp", "signalIds"],
+      "properties": {
+        "id": { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": [
+            "misconfiguration",
+            "process_drift",
+            "visibility_loss",
+            "control_failure",
+            "surface_expansion"
+          ]
+        },
+        "assetId": { "type": "string" },
+        "controlId": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "signalIds": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "impactSurfaceId": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+
+    "ImpactSurface": {
+      "type": "object",
+      "required": ["id", "assetIds"],
+      "properties": {
+        "id": { "type": "string" },
+        "assetIds": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "userSegments": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "dataClasses": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "ScoreBase": {
+      "type": "object",
+      "required": ["id", "eventId", "value", "scale"],
+      "properties": {
+        "id": { "type": "string" },
+        "eventId": { "type": "string" },
+        "value": { "type": "number", "minimum": 0 },
+        "scale": { "type": "number", "minimum": 1 },
+        "dimension": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+
+    "ControlWeakeningScore": {
+      "allOf": [
+        { "$ref": "#/definitions/ScoreBase" },
+        {
+          "type": "object",
+          "properties": {
+            "dimension": { "const": "control_weakening" }
+          }
+        }
+      ]
+    },
+
+    "ExposureAmplificationScore": {
+      "allOf": [
+        { "$ref": "#/definitions/ScoreBase" },
+        {
+          "type": "object",
+          "properties": {
+            "dimension": { "const": "exposure_amplification" }
+          }
+        }
+      ]
+    },
+
+    "DetectionBlindnessScore": {
+      "allOf": [
+        { "$ref": "#/definitions/ScoreBase" },
+        {
+          "type": "object",
+          "properties": {
+            "dimension": { "const": "detection_blindness" }
+          }
+        }
+      ]
+    },
+
+    "ProcessErosionScore": {
+      "allOf": [
+        { "$ref": "#/definitions/ScoreBase" },
+        {
+          "type": "object",
+          "properties": {
+            "dimension": { "const": "process_erosion" }
+          }
+        }
+      ]
+    },
+
+    "SecurityDegradationIndex": {
+      "type": "object",
+      "required": ["id", "scope", "value", "scale"],
+      "properties": {
+        "id": { "type": "string" },
+        "scope": {
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": { "type": "string", "enum": ["asset", "control", "global"] },
+            "assetId": { "type": "string" },
+            "controlId": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        "value": { "type": "number", "minimum": 0 },
+        "scale": { "type": "number", "minimum": 1 },
+        "components": {
+          "type": "object",
+          "properties": {
+            "controlWeakening": { "type": "number" },
+            "exposureAmplification": { "type": "number" },
+            "detectionBlindness": { "type": "number" },
+            "processErosion": { "type": "number" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "RemediationAction": {
+      "type": "object",
+      "required": ["id", "type", "priority", "title"],
+      "properties": {
+        "id": { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": [
+            "immediate_fix",
+            "structural_remediation",
+            "control_hardening",
+            "visibility_restoration"
+          ]
+        },
+        "priority": { "type": "string", "enum": ["p0", "p1", "p2", "p3"] },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "relatedEventIds": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "owner": { "type": "string" }
+      },
+      "additionalProperties": false
+    }
+  }
+}
