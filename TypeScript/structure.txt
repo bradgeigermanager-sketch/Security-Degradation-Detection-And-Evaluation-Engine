@@ -1,0 +1,90 @@
+sd-def/
+│
+├── src/
+│   ├── core/
+│   │   ├── models/
+│   │   │   ├── Asset.ts
+│   │   │   ├── Control.ts
+│   │   │   ├── Policy.ts
+│   │   │   ├── ThreatModel.ts
+│   │   │   ├── Signals.ts
+│   │   │   ├── DegradationEvent.ts
+│   │   │   ├── Scores.ts
+│   │   │   ├── Analysis.ts
+│   │   │   └── Remediation.ts
+│   │   │
+│   │   ├── interfaces/
+│   │   │   ├── SignalSource.ts
+│   │   │   ├── Scorer.ts
+│   │   │   ├── Analyzer.ts
+│   │   │   └── Planner.ts
+│   │   │
+│   │   └── utils/
+│   │       ├── time.ts
+│   │       ├── idGen.ts
+│   │       └── validation.ts
+│   │
+│   ├── ingestion/
+│   │   ├── AssetInventoryLoader.ts
+│   │   ├── ControlCatalogLoader.ts
+│   │   ├── PolicyBaselineLoader.ts
+│   │   ├── ThreatModelLoader.ts
+│   │   └── index.ts
+│   │
+│   ├── signals/
+│   │   ├── ConfigSignalCollector.ts
+│   │   ├── OperationalSignalCollector.ts
+│   │   ├── TelemetrySignalCollector.ts
+│   │   ├── AttackSurfaceSignalCollector.ts
+│   │   ├── Normalizer.ts
+│   │   ├── Classifier.ts
+│   │   └── index.ts
+│   │
+│   ├── events/
+│   │   ├── EventBuilder.ts
+│   │   ├── ImpactSurfaceMapper.ts
+│   │   └── index.ts
+│   │
+│   ├── mapping/
+│   │   ├── ControlFrameworkMapper.ts
+│   │   ├── ComplianceImpactMapper.ts
+│   │   └── index.ts
+│   │
+│   ├── scoring/
+│   │   ├── ControlWeakeningScorer.ts
+│   │   ├── ExposureAmplificationScorer.ts
+│   │   ├── DetectionBlindnessScorer.ts
+│   │   ├── ProcessErosionScorer.ts
+│   │   ├── SDIAggregator.ts
+│   │   └── index.ts
+│   │
+│   ├── analysis/
+│   │   ├── RootCauseClassifier.ts
+│   │   ├── SystemicWeaknessDetector.ts
+│   │   ├── TemporalDriftAnalyzer.ts
+│   │   └── index.ts
+│   │
+│   ├── projection/
+│   │   ├── DegradationTrajectoryModeler.ts
+│   │   ├── FailureCascadeModeler.ts
+│   │   ├── ExploitabilityForecaster.ts
+│   │   └── index.ts
+│   │
+│   ├── remediation/
+│   │   ├── ImmediateFixGenerator.ts
+│   │   ├── StructuralRemediationPlanner.ts
+│   │   ├── ControlHardeningPlanner.ts
+│   │   ├── VisibilityRestorationPlanner.ts
+│   │   └── index.ts
+│   │
+│   ├── outputs/
+│   │   ├── RiskDashboardAssembler.ts
+│   │   ├── ReportGenerator.ts
+│   │   └── index.ts
+│   │
+│   └── orchestrator/
+│       ├── Pipeline.ts
+│       ├── DagDefinition.ts
+│       └── index.ts
+│
+└── package.json
