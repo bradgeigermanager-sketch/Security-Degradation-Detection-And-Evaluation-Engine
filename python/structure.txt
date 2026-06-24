@@ -1,0 +1,87 @@
+sd_def/
+│
+├── core/
+│   ├── models/
+│   │   ├── assets.py
+│   │   ├── controls.py
+│   │   ├── policies.py
+│   │   ├── threats.py
+│   │   ├── signals.py
+│   │   ├── events.py
+│   │   ├── scores.py
+│   │   ├── analysis.py
+│   │   └── remediation.py
+│   │
+│   ├── interfaces/
+│   │   ├── signal_source.py
+│   │   ├── scorer.py
+│   │   ├── analyzer.py
+│   │   └── planner.py
+│   │
+│   └── utils/
+│       ├── time.py
+│       ├── id_gen.py
+│       └── validation.py
+│
+├── ingestion/
+│   ├── asset_inventory_loader.py
+│   ├── control_catalog_loader.py
+│   ├── policy_baseline_loader.py
+│   ├── threat_model_loader.py
+│   └── __init__.py
+│
+├── signals/
+│   ├── config_signal_collector.py
+│   ├── operational_signal_collector.py
+│   ├── telemetry_signal_collector.py
+│   ├── attack_surface_signal_collector.py
+│   ├── normalizer.py
+│   ├── classifier.py
+│   └── __init__.py
+│
+├── events/
+│   ├── event_builder.py
+│   ├── impact_surface_mapper.py
+│   └── __init__.py
+│
+├── mapping/
+│   ├── control_framework_mapper.py
+│   ├── compliance_impact_mapper.py
+│   └── __init__.py
+│
+├── scoring/
+│   ├── control_weakening_scorer.py
+│   ├── exposure_amplification_scorer.py
+│   ├── detection_blindness_scorer.py
+│   ├── process_erosion_scorer.py
+│   ├── sdi_aggregator.py
+│   └── __init__.py
+│
+├── analysis/
+│   ├── root_cause_classifier.py
+│   ├── systemic_weakness_detector.py
+│   ├── temporal_drift_analyzer.py
+│   └── __init__.py
+│
+├── projection/
+│   ├── degradation_trajectory_modeler.py
+│   ├── failure_cascade_modeler.py
+│   ├── exploitability_forecaster.py
+│   └── __init__.py
+│
+├── remediation/
+│   ├── immediate_fix_generator.py
+│   ├── structural_remediation_planner.py
+│   ├── control_hardening_planner.py
+│   ├── visibility_restoration_planner.py
+│   └── __init__.py
+│
+├── outputs/
+│   ├── risk_dashboard_assembler.py
+│   ├── report_generator.py
+│   └── __init__.py
+│
+└── orchestrator/
+    ├── pipeline.py
+    ├── dag_definition.py
+    └── __init__.py
