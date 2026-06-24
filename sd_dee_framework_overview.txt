@@ -1,0 +1,100 @@
+Core answer:  A systematic framework that identifies, measures, and scores conditions that weaken protection rather than strengthen it. The closest authoritative foundations come from the NIST Cybersecurity Framework (CSF), which defines how organizations should Identify, Protect, Detect, Respond, and Recover from security risks. These functions provide the backbone for evaluating negative protection conditions—that is, situations where controls fail, degrade, or create blind spots. 
+
+Below is a fully structured, multi‑layer engine aligned with NIST CSF principles and DoD cyber‑evaluation practices. ")
+
+---
+
+⚠️ Security‑Degrading Conditions: What You’re Actually Evaluating
+These are the classes of conditions that reduce protection and therefore must be detected:
+
+- Control Gaps — missing, outdated, or unimplemented controls.
+- Misconfigurations — incorrect settings that weaken defenses.
+- Visibility Loss — logging gaps, blind spots, unmonitored assets.
+- Process Drift — procedures not followed, outdated, or inconsistently applied.
+- Threat‑Surface Expansion — new assets, integrations, or exposures not accounted for.
+- Control Degradation — aging tools, expired certificates, unpatched systems.
+- False Sense of Security — tools present but ineffective, untested, or misaligned.
+- Overlapping or Conflicting Systems — redundancy that creates complexity, not resilience.
+
+These map directly to NIST CSF’s Identify → Protect → Detect functions, which emphasize understanding assets, implementing safeguards, and detecting failures. 
+
+---
+
+🧩 The Engine: Security‑Degradation Detection & Evaluation Framework (SD‑DEF)
+
+1. Signal Intake Layer
+Collects raw indicators of weakening protection.
+
+- Configuration Signals — misconfigurations, drift, missing baselines.  
+- Operational Signals — missed patches, failed backups, expired certificates.  
+- Telemetry Signals — logging gaps, missing EDR coverage.  
+- Threat‑Surface Signals — new assets, shadow IT, unmanaged endpoints.
+
+This aligns with NIST’s Identify and Detect functions. 
+
+---
+
+2. Normalization & Classification Layer
+Transforms raw signals into structured “degradation events.”
+
+- DegradationEvent — type, severity, asset, timestamp, affected control.
+- ControlMapping — maps events to NIST CSF outcomes.  
+- ImpactSurface — which systems, users, or processes are exposed.
+
+This mirrors DoD cyber DT&E practices for structured evaluation. ")
+
+---
+
+3. Degradation Scoring Engine
+Quantifies how much protection is lost.
+
+- ControlWeakeningScore — how much a control’s effectiveness is reduced.
+- ExposureAmplificationScore — how much the attack surface grows.
+- DetectionBlindnessScore — how much visibility is lost.
+- ProcessErosionScore — how much procedural reliability has degraded.
+
+Scores are aggregated into a Security Degradation Index (SDI).
+
+---
+
+4. Causal Analysis Layer
+Determines why protection is weakening.
+
+- RootCauseClassifier — human error, misconfiguration, tool failure, process drift.
+- SystemicWeaknessDetector — overlapping systems, unclear ownership, architectural fragility.
+- TemporalDriftAnalyzer — degradation over time.
+
+This aligns with NIST’s emphasis on understanding systemic risk. 
+
+---
+
+5. Risk Projection & Scenario Modeling
+Predicts future protection loss.
+
+- DegradationTrajectory — projected worsening over time.
+- FailureCascadeModel — how one weakened control triggers others.
+- ExploitabilityForecast — likelihood attackers can exploit the weakened state.
+
+---
+
+6. Response & Remediation Layer
+Generates prioritized actions.
+
+- ImmediateFixList — urgent remediation.
+- StructuralRemediationPlan — long‑term fixes.
+- ControlHardeningPlan — strengthen weak controls.
+- VisibilityRestorationPlan — restore monitoring and detection.
+
+This aligns with NIST’s Respond and Recover functions. 
+
+---
+
+📊 Summary Table: What the Engine Detects vs. What It Outputs
+
+| Weakening Condition | Detection Artifact | Evaluation Output |
+|-------------------------|------------------------|------------------------|
+| Misconfiguration | DegradationEvent(type=misconfig) | ControlWeakeningScore |
+| Logging gaps | VisibilityLossSignal | DetectionBlindnessScore |
+| Process drift | DriftEvent | ProcessErosionScore |
+| Tool degradation | ControlFailureSignal | ExposureAmplificationScore |
+| Overlapping systems | SystemicWeaknessSignal | SystemicRiskScore |
