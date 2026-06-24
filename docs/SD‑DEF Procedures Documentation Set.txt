@@ -1,0 +1,361 @@
+SD‑DEF Procedures Documentation Set
+
+---
+
+1. 🧩 Ingestion Procedures
+
+Asset Inventory Loading
+Purpose: Produce a deterministic AssetSet.  
+Inputs: CMDB, cloud APIs, endpoint registry  
+Outputs: AssetSet  
+Procedure:
+1. Query all authoritative asset sources.  
+2. Normalize identifiers.  
+3. Deduplicate by deterministic hash.  
+4. Validate required fields.  
+5. Emit AssetSet.
+
+---
+
+Control Catalog Loading
+Purpose: Produce ControlSet aligned to NIST‑CSF.  
+Inputs: Internal control library  
+Outputs: ControlSet  
+Procedure:  
+1. Load control definitions.  
+2. Map each control to NIST‑CSF function/category/subcategory.  
+3. Validate uniqueness.  
+4. Emit ControlSet.
+
+---
+
+Policy Baseline Loading
+Purpose: Produce PolicyBaselineSet.  
+Inputs: SOPs, configuration baselines  
+Outputs: PolicyBaselineSet  
+Procedure:  
+1. Parse baseline definitions.  
+2. Convert to normalized rule objects.  
+3. Validate rule syntax.  
+4. Emit PolicyBaselineSet.
+
+---
+
+Threat Model Loading
+Purpose: Produce ThreatModel.  
+Inputs: Threat intel, attack patterns  
+Outputs: ThreatModel  
+Procedure:  
+1. Load threat classes.  
+2. Normalize identifiers.  
+3. Map threats to assets and controls.  
+4. Emit ThreatModel.
+
+---
+
+---
+
+2. 📡 Signal Collection Procedures
+
+Configuration Signal Collection
+Inputs: Live configs, IaC, baselines  
+Outputs: ConfigSignalStream  
+Procedure:  
+1. Pull live configuration state.  
+2. Compare to baseline.  
+3. Emit deviations as signals.
+
+---
+
+Operational Signal Collection
+Inputs: Patch logs, backup logs, cert status  
+Outputs: OperationalSignalStream  
+Procedure:  
+1. Query operational telemetry.  
+2. Identify failures or overdue states.  
+3. Emit signals.
+
+---
+
+Telemetry Signal Collection
+Inputs: SIEM, EDR, sensor coverage  
+Outputs: TelemetrySignalStream  
+Procedure:  
+1. Validate sensor presence.  
+2. Identify blind spots.  
+3. Emit visibility signals.
+
+---
+
+Attack Surface Signal Collection
+Inputs: Discovery scans, cloud APIs  
+Outputs: AttackSurfaceSignalStream  
+Procedure:  
+1. Enumerate reachable surfaces.  
+2. Detect unmanaged assets.  
+3. Emit expansion signals.
+
+---
+
+---
+
+3. 🔄 Signal Normalization & Classification Procedures
+
+Signal Normalization
+Inputs: All signal streams  
+Outputs: NormalizedSignalStream  
+Procedure:  
+1. Convert timestamps to canonical format.  
+2. Normalize severity.  
+3. Normalize asset/control references.  
+4. Emit normalized signals.
+
+---
+
+Signal Classification
+Inputs: Normalized signals  
+Outputs: Typed signals  
+Procedure:  
+1. Apply rule‑based classifier.  
+2. Assign type: misconfig, drift, visibility loss, etc.  
+3. Emit typed signals.
+
+---
+
+---
+
+4. 🧱 Event Construction Procedures
+
+Degradation Event Building
+Inputs: Typed signals, AssetSet, ControlSet  
+Outputs: DegradationEventStream  
+Procedure:  
+1. Group signals by asset/control/time window.  
+2. Construct event object.  
+3. Assign deterministic event ID.  
+4. Emit event.
+
+---
+
+Impact Surface Mapping
+Inputs: Events, AssetSet, ThreatModel  
+Outputs: ImpactSurfaceSet  
+Procedure:  
+1. Identify affected assets.  
+2. Identify affected user segments.  
+3. Identify affected data classes.  
+4. Emit impact surface.
+
+---
+
+---
+
+5. 🗺️ Control & Compliance Mapping Procedures
+
+Control Framework Mapping
+Inputs: Events, ControlSet  
+Outputs: EventControlMapping  
+Procedure:  
+1. Map event to control.  
+2. Map control to NIST‑CSF.  
+3. Emit mapping.
+
+---
+
+Compliance Impact Mapping
+Inputs: Control mapping, PolicyBaselineSet  
+Outputs: ComplianceImpactSet  
+Procedure:  
+1. Identify violated baselines.  
+2. Assign compliance impact.  
+3. Emit compliance object.
+
+---
+
+---
+
+6. 📊 Scoring Procedures
+
+Control Weakening Scoring
+Inputs: Events, mappings, impact surfaces  
+Outputs: ControlWeakeningScoreSet  
+Procedure:  
+1. Evaluate control degradation.  
+2. Score severity.  
+3. Emit score.
+
+---
+
+Exposure Amplification Scoring
+Inputs: Surface expansion signals, ThreatModel  
+Outputs: ExposureAmplificationScoreSet  
+Procedure:  
+1. Quantify new exposure.  
+2. Score amplification.  
+3. Emit score.
+
+---
+
+Detection Blindness Scoring
+Inputs: Visibility loss signals  
+Outputs: DetectionBlindnessScoreSet  
+Procedure:  
+1. Quantify monitoring gaps.  
+2. Score blindness.  
+3. Emit score.
+
+---
+
+Process Erosion Scoring
+Inputs: Drift signals, baselines  
+Outputs: ProcessErosionScoreSet  
+Procedure:  
+1. Identify procedural drift.  
+2. Score erosion.  
+3. Emit score.
+
+---
+
+SDI Aggregation
+Inputs: All score sets  
+Outputs: SecurityDegradationIndex  
+Procedure:  
+1. Normalize scores.  
+2. Weight components.  
+3. Emit SDI.
+
+---
+
+---
+
+7. 🧠 Causal & Systemic Analysis Procedures
+
+Root Cause Classification
+Inputs: Events, scores  
+Outputs: RootCauseSet  
+Procedure:  
+1. Evaluate cause patterns.  
+2. Assign root cause.  
+3. Emit cause object.
+
+---
+
+Systemic Weakness Detection
+Inputs: Root causes, control mappings  
+Outputs: SystemicWeaknessSet  
+Procedure:  
+1. Identify repeated patterns.  
+2. Detect systemic issues.  
+3. Emit systemic weakness.
+
+---
+
+Temporal Drift Analysis
+Inputs: Historical events & scores  
+Outputs: DriftTrajectorySet  
+Procedure:  
+1. Build time series.  
+2. Detect drift trends.  
+3. Emit trajectory.
+
+---
+
+---
+
+8. 🔮 Projection Procedures
+
+Degradation Trajectory Modeling
+Inputs: Drift trajectories, SDI  
+Outputs: DegradationTrajectoryForecast  
+Procedure:  
+1. Fit degradation curve.  
+2. Forecast future state.  
+3. Emit forecast.
+
+---
+
+Failure Cascade Modeling
+Inputs: Systemic weaknesses, ThreatModel  
+Outputs: FailureCascadeGraph  
+Procedure:  
+1. Identify cascade edges.  
+2. Build cascade graph.  
+3. Emit graph.
+
+---
+
+Exploitability Forecasting
+Inputs: Trajectory forecast, cascade graph  
+Outputs: ExploitabilityForecastSet  
+Procedure:  
+1. Evaluate exploit likelihood.  
+2. Score exploitability.  
+3. Emit forecast.
+
+---
+
+---
+
+9. 🛠️ Remediation Procedures
+
+Immediate Fix Generation
+Inputs: High‑severity scores, forecasts  
+Outputs: ImmediateFixList  
+Procedure:  
+1. Identify urgent issues.  
+2. Generate fix actions.  
+3. Emit list.
+
+---
+
+Structural Remediation Planning
+Inputs: Systemic weaknesses  
+Outputs: StructuralRemediationPlan  
+Procedure:  
+1. Identify structural issues.  
+2. Generate long‑term plan.  
+3. Emit plan.
+
+---
+
+Control Hardening Planning
+Inputs: Control weakening scores  
+Outputs: ControlHardeningPlan  
+Procedure:  
+1. Identify weak controls.  
+2. Generate hardening steps.  
+3. Emit plan.
+
+---
+
+Visibility Restoration Planning
+Inputs: Blindness scores  
+Outputs: VisibilityRestorationPlan  
+Procedure:  
+1. Identify monitoring gaps.  
+2. Generate restoration steps.  
+3. Emit plan.
+
+---
+
+---
+
+10. 📤 Output Procedures
+
+Risk Dashboard Assembly
+Inputs: SDI, forecasts, remediation plans  
+Outputs: Dashboard artifacts  
+Procedure:  
+1. Aggregate metrics.  
+2. Render dashboard objects.  
+3. Emit dashboard.
+
+---
+
+Report Generation
+Inputs: All upstream artifacts  
+Outputs: Reports  
+Procedure:  
+1. Assemble narrative.  
+2. Insert metrics.  
+3. Emit reports.
